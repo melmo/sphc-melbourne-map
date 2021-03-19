@@ -31,7 +31,7 @@ const db = require("./app/models");
 
 if (process.env.DROP_DATA) {
 
-  /*
+/*
 For development - drop all data and initialise roles
 */
 
