@@ -52,6 +52,7 @@ app.get('/', function (req,res) {
 });
 
 // send requests to index file for react to handle loading correct page
+/*
 app.get('/add', function(req, res) {
   res.sendFile(path + "index.html", function(err) {
     if (err) {
@@ -67,7 +68,15 @@ app.get('/locations*', function(req, res) {
     }
   })
 });
+*/
 
+app.get('/*', function(req, res) {
+  res.sendFile(path + "index.html", function(err) {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+});
 require("./app/routes/location.routes")(app);
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
