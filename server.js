@@ -51,8 +51,8 @@ app.get('/', function (req,res) {
   res.sendFile(path + "index.html");
 });
 
-// send requests to index file for react to handle loading correct page
-/*
+
+
 app.get('/add', function(req, res) {
   res.sendFile(path + "index.html", function(err) {
     if (err) {
@@ -68,8 +68,13 @@ app.get('/locations*', function(req, res) {
     }
   })
 });
-*/
 
+
+require("./app/routes/location.routes")(app);
+require('./app/routes/auth.routes')(app);
+require('./app/routes/user.routes')(app);
+
+// send requests to index file for react to handle loading correct page
 app.get('/*', function(req, res) {
   res.sendFile(path + "index.html", function(err) {
     if (err) {
@@ -77,9 +82,6 @@ app.get('/*', function(req, res) {
     }
   })
 });
-require("./app/routes/location.routes")(app);
-require('./app/routes/auth.routes')(app);
-require('./app/routes/user.routes')(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
