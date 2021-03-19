@@ -29,17 +29,16 @@ app.use(express.static(path));
 const db = require("./app/models");
 
 
-if (process.env.DROP_DATA) {
+if (process.env.DROP_DATA === 'true') {
 
 /*
 For development - drop all data and initialise roles
 */
 
-const Role = db.role;
-const User = db.user;
+
 db.sequelize.sync({ force: true }).then(() => {
   console.log("Drop and re-sync db.");
-  initial();
+  initial(db);
 });
 
 } else {
@@ -96,23 +95,23 @@ app.listen(PORT, () => {
 });
 
 
-function initial() {
-  Role.create({
+function initial(db) {
+  db.role.create({
     id: 1,
     name: "user"
   });
  
-  Role.create({
+  db.role.create({
     id: 2,
     name: "moderator"
   });
  
-  Role.create({
+  db.role.create({
     id: 3,
     name: "admin"
   });
 
-  User.create({
+  db.user.create({
     username:"test",
     email:"test@test.com",
     password:bcrypt.hashSync("testtesttest", 8),
