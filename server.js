@@ -29,13 +29,11 @@ app.use(express.static(path));
 const db = require("./app/models");
 
 
-// for production
-db.sequelize.sync();
+if (process.env.DROP_DATA) {
 
-/*
+  /*
 For development - drop all data and initialise roles
-
-
+*/
 
 const Role = db.role;
 const User = db.user;
@@ -43,7 +41,15 @@ db.sequelize.sync({ force: true }).then(() => {
   console.log("Drop and re-sync db.");
   initial();
 });
-*/
+
+} else {
+  // for production
+  db.sequelize.sync();
+
+}
+
+
+
 
 
 // simple route
