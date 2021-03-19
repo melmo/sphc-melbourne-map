@@ -14,6 +14,9 @@ module.exports = app => {
   // Retrieve all published Locations
   router.get("/published", locations.findAllPublished);
 
+  // Retrieve all Locations by a given author
+  router.get("/author/:id",  [authJwt.verifyToken], locations.findAllByAuthor);
+
   // Retrieve a single Location with id
   router.get("/:id", [authJwt.verifyToken], locations.findOne);
 

@@ -30,12 +30,12 @@ const db = require("./app/models");
 
 
 // for production
-//db.sequelize.sync();
+db.sequelize.sync();
 
 /*
 For development - drop all data and initialise roles
 
-*/
+
 
 const Role = db.role;
 const User = db.user;
@@ -43,7 +43,7 @@ db.sequelize.sync({ force: true }).then(() => {
   console.log("Drop and re-sync db.");
   initial();
 });
-
+*/
 
 
 // simple route

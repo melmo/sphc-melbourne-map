@@ -8,6 +8,12 @@ module.exports = (sequelize, Sequelize) => {
     },
     published: {
       type: Sequelize.BOOLEAN
+    },
+    latitude:{
+      type: Sequelize.FLOAT
+    },
+    longitude:{
+      type: Sequelize.FLOAT
     }
   });
 
