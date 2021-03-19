@@ -107,11 +107,11 @@ exports.requestToken = (req, res) => {
 
     // send mail with defined transport object
     transporter.sendMail({
-      from: '"Save Public Housing Collective" <mail@melaniethewlis.com>', // sender address
+      from: '"Save Public Housing Collective" <'+process.env.SMTP_USER+'>', // sender address
       to: user.email, // list of receivers
       subject: "You requested a password reset", // Subject line
-      text: 'http://localhost:8081/reset-password/' + user.id + '/' + token, // plain text body
-      html: '<b><a href="http://localhost:8081/reset-password/' + user.id + '/' + token + '">Reset password</a></b>', // html body
+      text: process.env.DOMAIN + '/reset-password/' + user.id + '/' + token, // plain text body
+      html: '<b><a href="' + process.env.DOMAIN + '/reset-password/' + user.id + '/' + token + '">Reset password</a></b>', // html body
     }).then(info => {
       console.log("Message sent: %s", info.messageId);
 
