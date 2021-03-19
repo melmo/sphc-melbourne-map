@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const path = __dirname + '/app/views/';
 const bodyParser = require("body-parser");
@@ -11,7 +12,7 @@ var bcrypt = require("bcryptjs");
 app.use(express.static(path));
 
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: process.env.CORS_ORIGIN
 };
 
 app.use(cors(corsOptions));

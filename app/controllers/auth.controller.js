@@ -1,5 +1,4 @@
 const db = require("../models");
-const config = require("../config/auth.config");
 const User = db.user;
 const Role = db.role;
 const nodemailer = require("nodemailer");
@@ -10,23 +9,15 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
 // create reusable transporter object using the default SMTP transport
-/*let transporter = nodemailer.createTransport({
-  host: "smtp.ethereal.email",
-  port: 587,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: 'sarai.walker@ethereal.email',
-    pass: 'wVm2pjgvnr7XTKAbU4'
-  },
-});*/
+
 
 let transporter = nodemailer.createTransport({
-  host: "smtp.elasticemail.com",
-  port: 2525,
-  secure: false, // true for 465, false for other ports
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: process.env.SMTP_SECURE, // true for 465, false for other ports
   auth: {
-    user: 'mail@melaniethewlis.com',
-    pass: '5C32326F81F545C7E2E0B38DE20FC749304E'
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
   },
 });
 
@@ -74,12 +65,12 @@ exports.signin = (req, res) => {
         });
       }
 
-      var token = jwt.sign({ id: user.id }, config.secret, {
+
+      var token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
         expiresIn: 86400 // 24 hours
       });
 
       var authorities = [];
-      console.log(user.roleId);
       user.getRole().then(role => {
         
         authorities.push("ROLE_" + role.name.toUpperCase());
