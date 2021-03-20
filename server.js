@@ -74,6 +74,14 @@ app.get('/locations*', function(req, res) {
   })
 });
 
+app.get('/map*', function(req, res) {
+  res.sendFile(path + "index.html", function(err) {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+});
+
 
 require("./app/routes/location.routes")(app);
 require('./app/routes/auth.routes')(app);
