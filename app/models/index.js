@@ -23,6 +23,36 @@ db.location = require("../models/location.model.js")(sequelize, Sequelize);
 
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.role = require("../models/role.model.js")(sequelize, Sequelize);
+db.image = require("../models/image.model.js")(sequelize, Sequelize);
+db.resident = require("../models/resident.model.js")(sequelize, Sequelize);
+db.resource = require("../models/resource.model.js")(sequelize, Sequelize);
+db.category = require("../models/category.model.js")(sequelize, Sequelize);
+db.options = require("../models/options.model.js")(sequelize, Sequelize);
+
+db.location.hasMany(db.image, {as : "images", onDelete: 'cascade', hooks:true });
+db.image.belongsTo(db.location, {
+  foreignKey : "locationId",
+  as:"location"
+});
+
+db.location.hasMany(db.resident, {as : "residents", onDelete: 'cascade', hooks:true });
+db.resident.belongsTo(db.location, {
+  foreignKey : "locationId",
+  as:"location"
+});
+
+db.location.hasMany(db.resource, {as : "resources", onDelete: 'cascade', hooks:true });
+db.resource.belongsTo(db.location, {
+  foreignKey : "locationId",
+  as:"location"
+});
+
+
+db.category.hasMany(db.location, { foreignKey: "categoryId", as: "locations" });
+db.location.belongsTo(db.category, {
+  foreignKey: "categoryId",
+  as: "category",
+});
 
 
 db.role.hasMany(db.user, { as: "users" });

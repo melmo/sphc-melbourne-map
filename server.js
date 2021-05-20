@@ -43,7 +43,7 @@ db.sequelize.sync({ force: true }).then(() => {
 
 } else {
   // for production
-  db.sequelize.sync();
+  db.sequelize.sync({alter:false});
 
 }
 
@@ -86,6 +86,11 @@ app.get('/map*', function(req, res) {
 require("./app/routes/location.routes")(app);
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
+require('./app/routes/image.routes')(app);
+require('./app/routes/resident.routes')(app);
+require('./app/routes/resource.routes')(app);
+require('./app/routes/category.routes')(app);
+require('./app/routes/options.routes')(app);
 
 // send requests to index file for react to handle loading correct page
 app.get('/*', function(req, res) {
@@ -125,5 +130,8 @@ function initial(db) {
     password:bcrypt.hashSync("testtesttest", 8),
     roleId:3
 
+  });
+  db.options.create({
+    home_heading : 'Public Housing Watch Victoria'
   });
 }

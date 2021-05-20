@@ -22,6 +22,27 @@ verifyToken = (req, res, next) => {
   });
 };
 
+isLoggedIn = (req, res, next) => {
+  let token = req.headers["x-access-token"];
+
+  if (!token) {
+    req.userId = 0;
+    next();
+    return;
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      req.userId = 0;
+      next();
+      return;
+    }
+    req.userId = decoded.id;
+    next();
+    return;
+  });
+};
+
 isAdmin = (req, res, next) => {
   User.findByPk(req.userId).then(user => {
     user.getRole().then(role => {
@@ -106,6 +127,7 @@ isModeratorOrAdmin = (req, res, next) => {
 
 const authJwt = {
   verifyToken: verifyToken,
+  isLoggedIn : isLoggedIn,
   isAdmin: isAdmin,
   isAdminOrSelf: isAdminOrSelf,
   isModerator: isModerator,

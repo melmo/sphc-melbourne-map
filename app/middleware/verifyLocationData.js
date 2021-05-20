@@ -1,7 +1,9 @@
 const db = require("../models");
 const ROLES = db.ROLES;
 const User = db.user;
+const Location = db.location;
 const Op = db.Sequelize.Op;
+
 
 
 checkUpdatePermissions = (req, res, next) => {
@@ -35,10 +37,27 @@ checkUpdatePermissions = (req, res, next) => {
   });
 };
 
+checkLocationPublished = (req, res, next) => {
+  if (req.userId !== 0) {
+    next();
+    return;
+  }
+  Location.findByPk(req.params.id).then(location => {
+    if(location.published) {
+      next();
+      return;
+    }
+    res.send({
+        success:false,
+        message: "No access for this location"
+      });
+  });
+}
 
 
 const verifyLocationData = {
-  checkUpdatePermissions: checkUpdatePermissions
+  checkUpdatePermissions: checkUpdatePermissions,
+  checkLocationPublished:checkLocationPublished,
 };
 
 module.exports = verifyLocationData;

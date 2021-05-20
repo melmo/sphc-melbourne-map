@@ -1,6 +1,9 @@
 const db = require("../models");
 const Location = db.location;
+const Image = db.image;
 const Op = db.Sequelize.Op;
+var slugify = require("slugify");
+var sanitizeHtml = require("sanitize-html");
 
 // Create and Save a new Location
 exports.create = (req, res) => {
@@ -16,6 +19,7 @@ exports.create = (req, res) => {
   const location = {
     title: req.body.title,
     description: req.body.description,
+    slug : slugify(req.body.title, {lower:true}),
     published: req.body.published ? req.body.published : false,
     authorId:req.body.authorId
   };
@@ -35,8 +39,20 @@ exports.create = (req, res) => {
 
 // Retrieve all Locations from the database.
 exports.findAll = (req, res) => {
+  /*const title = req.query.title;
+  var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;*/
+  var condition = {};
   const title = req.query.title;
-  var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
+  if (title) {
+    condition.title = { [Op.iLike]: `%${title}%` };
+  }
+  /*
+  const slug = req.query.slug;
+  if (slug) {
+    condition.slug = { [Op.iLike]: `%${slug}%` };
+  }
+  */
+  
 
   Location.findAll({ where: condition })
     .then(data => {
@@ -52,9 +68,18 @@ exports.findAll = (req, res) => {
 
 // Find a single Location with an id
 exports.findOne = (req, res) => {
-  const id = req.params.id;
 
-  Location.findByPk(id)
+  console.log("req.params.id");
+  console.log(req.params.id);
+  const id = req.params.id;
+  var where = {
+     id: id
+   };
+  if (req.userId === 0) {
+    where.published = true;
+  }
+
+  Location.findOne({ where: where })
     .then(data => {
       res.send(data);
     })
@@ -65,6 +90,8 @@ exports.findOne = (req, res) => {
     });
 };
 
+
+
 // Update a Location by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
@@ -72,6 +99,9 @@ exports.update = (req, res) => {
   if (!req.body.permissions.canChangeOwner) {
     delete req.body.authorId;
   }
+
+  req.body.slug = slugify(req.body.slug, {lower:true});
+  req.body.history = sanitizeHtml(req.body.history);
 
   Location.update(req.body, {
     where: { id: id }
@@ -100,6 +130,10 @@ exports.update = (req, res) => {
 // Delete a Location with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
+
+  //TODO select all images that have this location id, delete from database and s3
+  //https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjects.html
+  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObjects-property
 
   Location.destroy({
     where: { id: id }
@@ -141,7 +175,14 @@ exports.deleteAll = (req, res) => {
 
 // Find all published Locations
 exports.findAllPublished = (req, res) => {
-  Location.findAll({ where: { published: true } })
+  Location.findAll({ where: { published: true },
+    include: [{
+        model: Image,
+        required : false,
+        where: {},
+        as:'images'
+    }]
+   })
     .then(data => {
       res.send(data);
     })
@@ -149,6 +190,28 @@ exports.findAllPublished = (req, res) => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while retrieving Locations."
+      });
+    });
+};
+
+// Find one published Location
+exports.findOnePublished = (req, res) => {
+  Location.findAll({ 
+    where: { published: true , id : req.params.id} ,
+    include: [{
+        model: Image,
+        required : false,
+        where: {},
+        as:'images'
+    }]
+    })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving Location."
       });
     });
 };
@@ -167,3 +230,25 @@ exports.findAllByAuthor = (req, res) => {
       });
     });
 };
+
+// Find a single Location by slug
+exports.findBySlug = (req, res) => {
+  const slug = req.params.slug;
+  var where = {
+     slug: slug
+   };
+  if (req.userId === 0) {
+    where.published = true;
+  }
+  Location.findOne({ where: where })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving the Location."
+      });
+    });
+};
+
