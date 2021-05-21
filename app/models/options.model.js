@@ -6,6 +6,12 @@ module.exports = (sequelize, Sequelize) => {
     home_text: {
       type: Sequelize.TEXT
     },
+    footer_text_1 : {
+      type: Sequelize.TEXT
+    },
+    footer_text_2 : {
+      type: Sequelize.TEXT
+    },
     call_to_action_text : {
       type: Sequelize.TEXT
     },

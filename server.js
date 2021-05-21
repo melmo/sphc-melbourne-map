@@ -3,8 +3,14 @@ const express = require("express");
 const path = __dirname + '/app/views/';
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const enforce = require('express-sslify');
 
 const app = express();
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(enforce.HTTPS({ trustProtoHeader: true }));
+}
+
 
 var bcrypt = require("bcryptjs");
 
@@ -43,7 +49,7 @@ db.sequelize.sync({ force: true }).then(() => {
 
 } else {
   // for production
-  db.sequelize.sync({alter:false});
+  db.sequelize.sync({alter:process.env.ALTER_TABLES});
 
 }
 

@@ -2,6 +2,8 @@ const db = require("../models");
 const Options = db.options;
 const Op = db.Sequelize.Op;
 
+var sanitizeHtml = require("sanitize-html");
+
 
 // Create and Save a new Options
 exports.create = (req, res) => {
@@ -60,6 +62,13 @@ exports.findOne = (req, res) => {
 // Update a Options by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
+
+  console.log(req.body);
+
+
+  req.body.home_text = sanitizeHtml(req.body.home_text);
+  req.body.footer_text_1 = sanitizeHtml(req.body.footer_text_1);
+  req.body.footer_text_2 = sanitizeHtml(req.body.footer_text_2);
 
   Options.update(req.body, {
     where: { id: id }
